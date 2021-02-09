@@ -1,7 +1,9 @@
 package controller;
 
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.Scanner;
 import entidades.Carro;
 import entidades.Cliente;
@@ -15,8 +17,33 @@ public class ControleVendas {
 	private ArrayList<Vendedor> vendedores = new ArrayList<>();
 	private ArrayList<Carro> carros = new ArrayList<>();
 	private ArrayList<Moto> motos = new ArrayList<>();
+	private ArquivoVendedores arquivoVendedores;
+	private ArquivoClientes arquivoClientes;
+	private ArquivoCarros arquivoCarros;
+	private ArquivoMotos arquivoMotos;
 	
-	
+	public ControleVendas() {
+		try {
+			this.arquivoVendedores = new ArquivoVendedores("D:\\BOOTCAMP_IGTI\\modulo3\\Projetos\\DesafioModulo3\\arquivoVendedores.txt");		
+		} catch (IOException e) {
+			System.out.println(e.getMessage());
+		}
+		try {
+			this.arquivoClientes = new ArquivoClientes("D:\\BOOTCAMP_IGTI\\modulo3\\Projetos\\DesafioModulo3\\arquivoClientes.txt");		
+		} catch (IOException e) {
+			System.out.println(e.getMessage());
+		}
+		try {
+			this.arquivoCarros = new ArquivoCarros("D:\\BOOTCAMP_IGTI\\modulo3\\Projetos\\DesafioModulo3\\arquivoCarros.txt");
+		} catch (IOException e) {
+			System.out.println(e.getMessage());
+		}
+		try {
+			this.arquivoMotos = new ArquivoMotos("D:\\BOOTCAMP_IGTI\\modulo3\\Projetos\\DesafioModulo3\\arquivoMotos.txt");
+		} catch (IOException e) {
+			System.out.println(e.getMessage());
+		}
+	}
 	
 	private String mostrarMenu() {
 		StringBuilder sb = new StringBuilder();
@@ -39,6 +66,10 @@ public class ControleVendas {
 	
 	
 	public void iniciar() {
+		vendedores.addAll(arquivoVendedores.lerArquivo());
+		clientes.addAll(arquivoClientes.lerArquivo());
+		carros.addAll(arquivoCarros.lerArquivo(vendedores,clientes));
+		motos.addAll(arquivoMotos.lerArquivo(vendedores,clientes));
 		String opcao = mostrarMenu();
 		while (!opcao.toUpperCase().equals("S")) {
 			switch (opcao) {
@@ -59,76 +90,64 @@ public class ControleVendas {
 				opcao = mostrarMenu();
 				break;
 			case "5":
-				System.out.println("Digite o modelo do carro: ");
-				String modelo = scanner.nextLine();
-				System.out.println("Digite a marca do carro: ");
-				String marca = scanner.nextLine();
-				System.out.println("Digite o ano do carro: ");
-				Integer ano = Integer.parseInt(scanner.nextLine());
-				System.out.println("Digite o valor do carro: ");
-				Double valor = Double.parseDouble(scanner.nextLine());
-				System.out.println("Digite o índice do vendedor: ");
-				Integer indiceVendedor = Integer.parseInt(scanner.nextLine());
-				Carro carro = new Carro(modelo, marca, ano, valor, vendedores.get(indiceVendedor));
-				carros.add(carro);
+				Carro novoCarro = arquivoCarros.escreverArquivo(vendedores,carros);
+				if (novoCarro != null) {
+					carros.add(novoCarro);
+				}
 				opcao = mostrarMenu();
 				break;
 			case "6":
-				System.out.println("Digite o modelo da moto: ");
-				String modeloMoto = scanner.nextLine();
-				System.out.println("Digite a marca da moto: ");
-				String marcaMoto = scanner.nextLine();
-				System.out.println("Digite o ano da moto: ");
-				Integer anoMoto = Integer.parseInt(scanner.nextLine());
-				System.out.println("Digite o valor da moto: ");
-				Double valorMoto = Double.parseDouble(scanner.nextLine());
-				System.out.println("Digite o índice do vendedor: ");
-				Integer indiceVendedorMoto = Integer.parseInt(scanner.nextLine());
-				Moto moto = new Moto(modeloMoto, marcaMoto, anoMoto, valorMoto, vendedores.get(indiceVendedorMoto));
-				motos.add(moto);
+				Moto novaMoto = arquivoMotos.escreverArquivo(vendedores,motos);
+				if (novaMoto != null) {
+					motos.add(novaMoto);
+				}
 				opcao = mostrarMenu();
 				break;
 			case "7":
-				System.out.println("Digite o nome do cliente: ");
-				String nomeCliente = scanner.nextLine();
-				System.out.println("Digite o cpf do cliente: ");
-				String cpfCliente = scanner.nextLine();
-				System.out.println("Digite o endereco do cliente: ");
-				String enderecoCliente = scanner.nextLine();
-				Cliente cliente = new Cliente(nomeCliente, cpfCliente, enderecoCliente);
-				clientes.add(cliente);
+				Cliente novoCliente = arquivoClientes.escreverArquivo();
+				if (novoCliente != null) {
+					clientes.add(novoCliente);
+				}
 				opcao = mostrarMenu();
 				break;
 			case "8":
-				System.out.println("Digite o nome do vendedor: ");
-				String nomeVendedor = scanner.nextLine();
-				System.out.println("Digite o cpf do vendedor: ");
-				String cpfVendedor = scanner.nextLine();
-				System.out.println("Digite a matricula do vendedor: ");
-				Integer matriculaVendedor = Integer.parseInt(scanner.nextLine());
-				Vendedor vendedor = new Vendedor(nomeVendedor, cpfVendedor, matriculaVendedor);
-				vendedores.add(vendedor);
+				Vendedor novoVendedor = arquivoVendedores.escreverArquivo();
+				if (novoVendedor != null) {
+					vendedores.add(novoVendedor);
+				}
 				opcao = mostrarMenu();
 				break;
 			case "9":
-				System.out.println("Digite o índice do carro: ");
-				Integer indiceCarro = Integer.parseInt(scanner.nextLine());
-				System.out.println("Digite o índice do cliente: ");
-				Integer indiceClienteCarro = Integer.parseInt(scanner.nextLine());
-				carros.get(indiceCarro).setCliente(clientes.get(indiceClienteCarro));
+				System.out.println("Digite o id do carro: ");
+				Integer idCarro = Integer.parseInt(scanner.nextLine());
+				Optional<Carro> selectedCarroId = carros.stream().filter(carro -> carro.getId().equals(idCarro)).findFirst();
+				Integer indiceCarro = carros.indexOf(selectedCarroId.get());
+				System.out.println("Digite o cpf do cliente: ");
+				String cpfClienteCarro = scanner.nextLine();
+				Optional<Cliente> selectedCarroCliente = clientes.stream().filter(cliente -> cliente.getCpf().equals(cpfClienteCarro)).findFirst();
+				carros.get(indiceCarro).setCliente(selectedCarroCliente.get());
+				arquivoCarros.atualizarArquivo(carros);
 				opcao = mostrarMenu();
 				break;
 			case "10":
-				System.out.println("Digite o índice da moto: ");
-				Integer indiceMoto = Integer.parseInt(scanner.nextLine());
-				System.out.println("Digite o índice do cliente: ");
-				Integer indiceClienteMoto = Integer.parseInt(scanner.nextLine());
-				motos.get(indiceMoto).setCliente(clientes.get(indiceClienteMoto));
+				System.out.println("Digite o id da moto: ");
+				Integer idMoto = Integer.parseInt(scanner.nextLine());
+				Optional<Moto> selectedMotoId = motos.stream().filter(moto -> moto.getId().equals(idMoto)).findFirst();
+				Integer indiceMoto = motos.indexOf(selectedMotoId.get());
+				System.out.println("Digite o cpf do cliente: ");
+				String cpfClienteMoto = scanner.nextLine();
+				Optional<Cliente> selectedMotoCliente = clientes.stream().filter(cliente -> cliente.getCpf().equals(cpfClienteMoto)).findFirst();
+				motos.get(indiceMoto).setCliente(selectedMotoCliente.get());
+				arquivoMotos.atualizarArquivo(motos);
 				opcao = mostrarMenu();
 				break;
 			}
 		}
 		if (opcao.toUpperCase().equals("S")) {
+			arquivoVendedores.fecharLeitor();
+			arquivoClientes.fecharLeitor();
+			arquivoCarros.fecharLeitor();
+			arquivoMotos.fecharLeitor();
 			System.out.println("Fim da execução");
 		}
 	}

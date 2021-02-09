@@ -1,6 +1,7 @@
 package entidades;
 
 public abstract class Veiculos {
+	protected Integer id;
 	protected String modelo;
 	protected String marca;
 	protected Integer ano;
@@ -9,6 +10,12 @@ public abstract class Veiculos {
 	protected Cliente cliente;
 	
 	
+	public Integer getId() {
+		return id;
+	}
+	public void setId(Integer id) {
+		this.id = id;
+	}
 	public String getModelo() {
 		return modelo;
 	}

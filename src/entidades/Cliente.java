@@ -11,7 +11,7 @@ public class Cliente extends Pessoa {
 	}
 	
 	public String toString() {
-		return nome + " - " + cpf + " - " + endereco;
+		return String.format("\nCliente: %s - CPF: %s - Endereço: %s",nome,cpf,endereco);
 	}
 	
 	public String getEndereco() {

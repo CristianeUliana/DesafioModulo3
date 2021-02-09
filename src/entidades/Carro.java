@@ -1,8 +1,12 @@
 package entidades;
 
+
 public class Carro extends Veiculos {
 
-	public Carro(String modelo, String marca, Integer ano, Double valor, Vendedor vendedorResponsavel) {
+	
+	
+	public Carro(Integer id, String modelo, String marca, Integer ano, Double valor, Vendedor vendedorResponsavel) {
+		this.id = id;
 		this.modelo = modelo;
 		this.marca = marca;
 		this.ano = ano;
@@ -12,6 +16,11 @@ public class Carro extends Veiculos {
 	}
 	
 	public String toString() {
-		return modelo + " - " + marca + " - " + ano + " - " + valor + " - " + vendedorResponsavel + " - " + cliente;
+		if (cliente == null) {
+			return String.format("\nID: %s - Modelo: %s - Marca: %s - Ano: %d - Valor: R$ %.2f - Vendedor Responsável: %s",id,modelo,marca,ano,valor,vendedorResponsavel.getNome());
+		} else {
+			return String.format("\nID: %s - Modelo: %s - Marca: %s - Ano: %d - Valor: R$ %.2f - Vendedor Responsável: %s - Comprado por: %s",id,modelo,marca,ano,valor,vendedorResponsavel.getNome(),cliente.getNome());
+		}
+	
 	}
 }

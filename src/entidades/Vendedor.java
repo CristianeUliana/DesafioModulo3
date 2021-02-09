@@ -10,7 +10,7 @@ public class Vendedor extends Pessoa {
 	}
 	
 	public String toString() {
-		return nome + " - " + cpf + " - " + matricula;
+		return String.format("\nVendedor: %s - CPF: %s - Matrícula: %d",nome,cpf,matricula);
 	}
 	
 	public Integer getMatricula() {
