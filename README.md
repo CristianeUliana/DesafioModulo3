@@ -9,3 +9,5 @@ O desafio consistia em desenvolver um programa que permitisse:
 3. Cadastrar os clientes da concessionária.
 4. Realizar a venda dos carro e motos.
 5. Vincular o cliente ao veículo comprado.
+
+A segunda versão do programa apresenta como melhoria a gravação e leitura dos dados em arquivos para posterior utilização. Dessa forma, os dados não se perdem cada vez que o programa é reiniciado.
