@@ -33,16 +33,8 @@ public class ControleVendas {
 		} catch (IOException e) {
 			System.out.println(e.getMessage());
 		}
-		try {
-			this.arquivoCarros = new ArquivoCarros("D:\\BOOTCAMP_IGTI\\modulo3\\Projetos\\DesafioModulo3\\arquivoCarros.txt");
-		} catch (IOException e) {
-			System.out.println(e.getMessage());
-		}
-		try {
-			this.arquivoMotos = new ArquivoMotos("D:\\BOOTCAMP_IGTI\\modulo3\\Projetos\\DesafioModulo3\\arquivoMotos.txt");
-		} catch (IOException e) {
-			System.out.println(e.getMessage());
-		}
+		this.arquivoCarros = new ArquivoCarros("D:\\BOOTCAMP_IGTI\\modulo3\\Projetos\\DesafioModulo3\\arquivoCarros.txt");
+		this.arquivoMotos = new ArquivoMotos("D:\\BOOTCAMP_IGTI\\modulo3\\Projetos\\DesafioModulo3\\arquivoMotos.txt");
 	}
 	
 	private String mostrarMenu() {
@@ -146,8 +138,6 @@ public class ControleVendas {
 		if (opcao.toUpperCase().equals("S")) {
 			arquivoVendedores.fecharLeitor();
 			arquivoClientes.fecharLeitor();
-			arquivoCarros.fecharLeitor();
-			arquivoMotos.fecharLeitor();
 			System.out.println("Fim da execução");
 		}
 	}

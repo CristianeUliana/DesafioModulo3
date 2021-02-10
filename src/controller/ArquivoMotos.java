@@ -14,14 +14,30 @@ import entidades.Vendedor;
 
 public class ArquivoMotos {
 
+	private String filePath;
 	private BufferedWriter buffWrite;
-	private BufferedWriter buffWriteReset;
 	private BufferedReader buffRead;
 	
-	public ArquivoMotos(String path) throws IOException {
-		buffWrite = new BufferedWriter(new FileWriter(path, true));
-		buffWriteReset = new BufferedWriter(new FileWriter(path, true));
-		buffRead = new BufferedReader(new FileReader(path));
+	public ArquivoMotos(String path) {
+		this.filePath = path;
+	}
+	
+	public void generateFileManagement(boolean keepFile) {
+		try {
+			buffWrite = new BufferedWriter(new FileWriter(filePath, keepFile));
+			buffRead = new BufferedReader(new FileReader(filePath));
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}
+	
+	private void closeFileManagement() {
+		try {
+			buffWrite.close();
+			buffRead.close();			
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
 	}
 	
 	@SuppressWarnings("resource")
@@ -45,6 +61,7 @@ public class ArquivoMotos {
 		Integer matriculaVendedor = Integer.parseInt(scanner.nextLine());
 		Optional<Vendedor> selected = vendedores.stream().filter(vendedor -> vendedor.getMatricula().equals(matriculaVendedor)).findFirst();
 		Moto moto = new Moto(id, modelo, marca, ano, valor, selected.get());
+		generateFileManagement(true);
 		
 		try {
 			buffWrite.append(modelo + ";" + marca + ";" +  ano + ";" + valor + ";" + selected.get().getMatricula());
@@ -52,25 +69,16 @@ public class ArquivoMotos {
 		} catch (IOException e) {
 			System.out.println(e.getMessage());
 		} finally {
-			try {
-				buffWrite.flush();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}						
+			closeFileManagement();		
 		}
 		return moto;
 	}
 
-	public void fecharLeitor() {
-		try {
-			buffWrite.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+	
 	
 	
 	public void atualizarArquivo(ArrayList<Moto> motos) {
+		generateFileManagement(false);
 		try {
 			for (int i=0; i<motos.size(); i++) {
 				StringBuilder novoRegistro = new StringBuilder();
@@ -91,17 +99,13 @@ public class ArquivoMotos {
 				if (cliente != null) {
 					novoRegistro.append(cliente.getCpf());
 				}
-				buffWriteReset.append(novoRegistro.toString());
-				buffWriteReset.newLine();
+				buffWrite.append(novoRegistro.toString());
+				buffWrite.newLine();
 			}
 		} catch (IOException e) {
 			System.out.println(e.getMessage());
 		} finally {
-			try {
-				buffWrite.flush();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			closeFileManagement();
 		}
 	}
 	
@@ -109,6 +113,7 @@ public class ArquivoMotos {
 		String[] linha;
 		String dados = "";
 		ArrayList<Moto> motos = new ArrayList<>();
+		generateFileManagement(true);
 		try { 
 			while (true) {
 				if (dados != null) {
@@ -135,9 +140,10 @@ public class ArquivoMotos {
 			}
 			} catch (IOException e) {
 				System.out.println(e.getMessage());
+			} finally {
+				closeFileManagement();
 			}
 		
 		return motos;
 		}
-	
 }

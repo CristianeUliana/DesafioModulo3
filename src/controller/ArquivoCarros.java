@@ -15,14 +15,30 @@ import entidades.Vendedor;
 
 public class ArquivoCarros {
 
+	private String filePath;
 	private BufferedWriter buffWrite;
-	private BufferedWriter buffWriteReset;
 	private BufferedReader buffRead;
 	
-	public ArquivoCarros(String path) throws IOException {
-		buffWrite = new BufferedWriter(new FileWriter(path, true));
-		buffWriteReset = new BufferedWriter(new FileWriter(path, true));
-		buffRead = new BufferedReader(new FileReader(path));
+	public ArquivoCarros(String path) {
+		this.filePath = path;
+	}
+	
+	private void generateFileManagement(boolean keepFile) {
+		try {
+			buffWrite = new BufferedWriter(new FileWriter(filePath, keepFile));
+			buffRead = new BufferedReader(new FileReader(filePath));			
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}
+	
+	private void closeFileManagement() {
+		try {
+			buffWrite.close();
+			buffRead.close();			
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
 	}
 	
 	@SuppressWarnings("resource")
@@ -46,32 +62,24 @@ public class ArquivoCarros {
 		Integer matriculaVendedor = Integer.parseInt(scanner.nextLine());
 		Optional<Vendedor> selected = vendedores.stream().filter(vendedor -> vendedor.getMatricula().equals(matriculaVendedor)).findFirst();
 		Carro carro = new Carro(id, modelo, marca, ano, valor, selected.get());
-				
+		
+		generateFileManagement(true);
 		try {
 			buffWrite.append(id + ";" + modelo + ";" + marca + ";" +  ano + ";" + valor + ";" + selected.get().getMatricula());
 			buffWrite.newLine();
 		} catch (IOException e) {
 			System.out.println(e.getMessage());
 		} finally {
-			try {
-				buffWrite.flush();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}						
+			closeFileManagement();					
 		}
 		return carro;
 	}
 
-	public void fecharLeitor() {
-		try {
-			buffWrite.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+	
 	
 	
 	public void atualizarArquivo(ArrayList<Carro> carros) {
+		generateFileManagement(false);
 		try {
 			for (int i=0; i<carros.size(); i++) {
 				StringBuilder novoRegistro = new StringBuilder();
@@ -86,23 +94,20 @@ public class ArquivoCarros {
 				novoRegistro.append(marca).append(";");
 				novoRegistro.append(ano).append(";");
 				novoRegistro.append(valor).append(";");
-				novoRegistro.append(vendedorResponsavel.getMatricula()).append(";");
+				novoRegistro.append(vendedorResponsavel.getMatricula());
 				
 				Cliente cliente = carros.get(i).getCliente();
 				if (cliente != null) {
-					novoRegistro.append(cliente.getCpf());
+					novoRegistro.append(";").append(cliente.getCpf());
 				}
-				buffWriteReset.append(novoRegistro.toString());
-				buffWriteReset.newLine();
+				buffWrite.append(novoRegistro.toString());
+				buffWrite.newLine();
 			}
+			
 		} catch (IOException e) {
 			System.out.println(e.getMessage());
 		} finally {
-			try {
-				buffWrite.flush();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			closeFileManagement();
 		}
 	}
 	
@@ -111,6 +116,7 @@ public class ArquivoCarros {
 		String[] linha;
 		String dados = "";
 		ArrayList<Carro> carros = new ArrayList<>();
+		generateFileManagement(true);
 		try { 
 			while (true) {
 				if (dados != null) {
@@ -138,10 +144,11 @@ public class ArquivoCarros {
 			}
 			} catch (IOException e) {
 				System.out.println(e.getMessage());
+			} finally {
+				closeFileManagement();
 			}
+			
 		
 		return carros;
 		}
-	
-	
 }
